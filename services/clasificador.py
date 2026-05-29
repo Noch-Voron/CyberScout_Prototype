@@ -6,7 +6,7 @@ client = genai.Client(
     api_key=os.getenv("GEMINI_API_KEY")
 )
 
-async def classify_article(article: str):
+async def clasificar(article: str):
 
     prompt = f"""
     You are a cybersecurity analyst.
@@ -24,7 +24,7 @@ async def classify_article(article: str):
     {article}
     """
 
-    response = client.models.generate_content(
+    respuesta = client.models.generate_content(
         model="gemini-2.5-flash",
         contents=prompt,
         config={
@@ -32,4 +32,4 @@ async def classify_article(article: str):
         }
     )
 
-    return json.loads(response.text)
+    return json.loads(respuesta.text)
