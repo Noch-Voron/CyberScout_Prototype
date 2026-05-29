@@ -6,7 +6,7 @@ client = genai.Client(
     api_key=os.getenv("GEMINI_API_KEY")
 )
 
-async def clasificar(article: str):
+async def clasificar_noticias(article: str):
 
     prompt = f"""
     You are a cybersecurity analyst.
