@@ -4,12 +4,16 @@ import asyncio
 from contextlib import asynccontextmanager
 from db.database import db
 
-app = FastAPI()
-router = APIRouter()
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    await db.connect()
     asyncio.create_task(fetchLoop())
-    db.connect("Insert dsn aqui")
     yield
-    db.disconnect()
+    await db.disconnect()
+
+app = FastAPI(lifespan=lifespan)
+router = APIRouter()
+
+@app.get("/")
+async def root():
+    return {"message": "aaa"}
