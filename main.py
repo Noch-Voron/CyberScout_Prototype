@@ -4,8 +4,19 @@ from typing import List, Dict
 from db.database import db
 import json
 from motor_de_cruce.motor import evaluar_noticia, activoServidor, noticiaEstructurada
+from background.loop import fetchLoop
+import asyncio
+from contextlib import asynccontextmanager
+from db.database import db
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await db.connect()
+    asyncio.create_task(fetchLoop())
+    yield
+    await db.disconnect()
+
+app = FastAPI(lifespan=lifespan)
 router = APIRouter()
 
 # Lo que envía react, este sería un inventario que se ingresa desde el frontend
