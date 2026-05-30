@@ -61,10 +61,10 @@ def check_version(server_version: str, threat_versions: list[str]) -> bool:
     return False #no hay versión exacta que afecte al cliente.
     
 
-def evaluar_noticia(noticia: noticiaEstructurada) -> List:
+def evaluar_noticia(noticia: noticiaEstructurada, inventario_cliente: List[activoServidor]) -> List:
     alertas_generadas = []
 
-    for server in Inventario_Local:
+    for server in inventario_cliente:
         for nombre_vuln, versiones_vuln in noticia.activos_afectados.items():
             
             match = "none" # puede ser "partial" o "full"
