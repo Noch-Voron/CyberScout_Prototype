@@ -1,6 +1,7 @@
 from google import genai
 import os
 import json
+
 client = genai.Client(
     api_key=os.getenv("GEMINI_API_KEY")
 )
@@ -40,18 +41,18 @@ async def clasificar_noticias(article: str):
     
     Return ONLY a valid JSON object with the following schema:
     
-    {
-    "categoria": "string",
-    "cve_id": "string | null",
-    "severidad": "critico | alto | medio | bajo | null",
-    "activos_afectados": {
-    "product_name": ["version1", "version2"]
-    },
-    "accion_recomendada": "string",
-    "puntuacion_cvss": "string | null",
-    "tipo_vulnerabilidad": "string | null",
-    "estado_vulnerabilidad": "string | null"
-    }
+    {{
+        "categoria": "string",
+        "cve_id": "string | null",
+        "severidad": "critico | alto | medio | bajo | null",
+        "activos_afectados": {{
+            "product_name": ["version1", "version2"]
+        }},
+        "accion_recomendada": "string",
+        "puntuacion_cvss": "string | null",
+        "tipo_vulnerabilidad": "string | null",
+        "estado_vulnerabilidad": "string | null"
+    }}
     
     Rules:
     
@@ -61,7 +62,7 @@ async def clasificar_noticias(article: str):
     4. Do NOT include text before or after the JSON.
     5. Use null when information cannot be determined from the article.
     6. Do not invent CVEs, CVSS scores, versions, products, patches, or vulnerability types.
-    7. activos_afectados must be an empty object {} if no affected assets are identified.
+    7. activos_afectados must be an empty object {{}} if no affected assets are identified.
     8. accion_recomendada should be empty string "" if no recommendation can be inferred.
     
     Special rules for non-vulnerability articles:
@@ -86,9 +87,10 @@ async def clasificar_noticias(article: str):
     Article:
     
     {article}
-
     """
-    respuesta = client.models.generate_content(
+
+    # Cambiamos a client.aio e incluimos el await
+    respuesta = await client.aio.models.generate_content(
         model="gemini-2.5-flash",
         contents=prompt,
         config={
