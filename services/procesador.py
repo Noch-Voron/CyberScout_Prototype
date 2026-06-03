@@ -1,7 +1,7 @@
 import json
 
 from db.database import db
-from services.classifier import classify_article
+from services.clasificador import clasificar_noticias
 
 async def procesar_noticias():
 

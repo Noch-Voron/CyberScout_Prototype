@@ -4,6 +4,7 @@ import asyncio
 from contextlib import asynccontextmanager
 from db.database import db
 
+from routers.noticias import router as noticias_router
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await db.connect()
@@ -12,8 +13,8 @@ async def lifespan(app: FastAPI):
     await db.disconnect()
 
 app = FastAPI(lifespan=lifespan)
-router = APIRouter()
+app.include_router(noticias_router)
 
 @app.get("/")
 async def root():
-    return {"message": "aaa"}
+    return {"message": "Motor de CyberScout Activo"}
