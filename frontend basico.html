@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>CyberScout - Test SOC Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #1e1e1e; color: #fff; padding: 20px; }
+        .alerta { background: #333; border-left: 5px solid #ff4444; padding: 15px; margin-bottom: 10px; }
+        .critico { color: #ff4444; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>🛡️ CyberScout - Alertas en Tiempo Real</h1>
+    <p>Esperando nuevas amenazas...</p>
+    
+    <div id="contenedor-alertas"></div>
+
+    <script>
+        // ¡Aquí nos conectamos al "tubo" de tu FastAPI!
+        const evtSource = new EventSource("http://127.0.0.1:8000/api/noticias/stream");
+        
+        evtSource.onmessage = function(event) {
+            // Cuando FastAPI nos empuja una noticia, la leemos
+            const noticia = JSON.parse(event.data);
+            const contenedor = document.getElementById("contenedor-alertas");
+            
+            // Creamos un cuadro en la pantalla
+            const div = document.createElement("div");
+            div.className = "alerta";
+            div.innerHTML = `
+                <h3>${noticia.title}</h3>
+                <p><b>Severidad:</b> <span class="critico">${noticia.tags.severidad}</span></p>
+                <p><b>CVE:</b> ${noticia.tags.cve_id || 'N/A'}</p>
+                <p><b>Activos afectados:</b> ${JSON.stringify(noticia.tags.activos_afectados)}</p>
+            `;
+            
+            // Lo ponemos de primero en la lista
+            contenedor.prepend(div);
+        };
+    </script>
+</body>
+</html>
