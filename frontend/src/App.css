@@ -1,0 +1,73 @@
+body {
+  margin: 0;
+  background-color: #0b0c10;
+  color: #c5c6c7;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.dashboard {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.header {
+  border-bottom: 1px solid #1f2833;
+  padding-bottom: 20px;
+  margin-bottom: 30px;
+}
+
+.header h1 {
+  color: #66fcf1;
+  margin: 0 0 5px 0;
+}
+
+.no-alerts {
+  background-color: rgba(69, 162, 158, 0.1);
+  border: 1px solid #45a29e;
+  color: #45a29e;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.alert-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.alert-card {
+  background-color: #1f2833;
+  border-radius: 8px;
+  padding: 20px;
+  position: relative;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  border-left: 5px solid gray;
+}
+
+.alert-card.full { border-left-color: #ff3b30; }
+.alert-card.partial { border-left-color: #ff9500; }
+
+.alert-badge {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.alert-card.full .alert-badge { background-color: rgba(255, 59, 48, 0.2); color: #ff3b30; }
+.alert-card.partial .alert-badge { background-color: rgba(255, 149, 0, 0.2); color: #ff9500; }
+
+.alert-card h3 {
+  margin-top: 0;
+  color: #ffffff;
+}
+
+.alert-card p {
+  margin: 5px 0;
+  font-size: 0.9rem;
+}

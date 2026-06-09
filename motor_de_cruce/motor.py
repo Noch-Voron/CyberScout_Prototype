@@ -135,7 +135,7 @@ if __name__ == "__main__":
     for i, noticia in enumerate(bateria_de_noticias, 1):
         print(f"--- Evaluando Noticia {i}: {noticia.cve_id} ---")
         sleep(1)
-        resultados = evaluar_noticia(noticia)
+        resultados = evaluar_noticia(noticia, Inventario_Local)
         
         if not resultados:
             print("  Ningún servidor afectado (None).")

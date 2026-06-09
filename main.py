@@ -48,7 +48,7 @@ async def sincronizar_alertas(solicitud: SolicitudSincronización):
         ) # se seleccionan las id y tags de noticias donde no ha sido procesado por el cliente.
     
     if not noticias_nuevas_db:
-        return {"nuevas_alertas": [], "id_último_sincronizado": solicitud.id_ultima_noticia}
+        return {"nuevas_alertas": [], "id_ultimo_sincronizado": solicitud.id_ultima_noticia}
     
 
     # transformar datos db a modelos.
