@@ -5,12 +5,18 @@ import asyncio
 from db.database import db
 
 #hardcodeado mientras aun no este la hu3 con las fuentes dinamicas/disponibles en db
-sources = ["https://feeds.feedburner.com/TheHackersNews"]
+#sources = ["https://feeds.feedburner.com/TheHackersNews"]
 
 async def ingesta():
     print("ingesta")
-#    for source in sources 
-    feed = feedparser.parse(sources[0])
+    
+    async with db.pool.acquire() as conn:
+        sources = await conn.fetch("SELECT url FROM fuentes WHERE processed = FALSE")
+        
+#   for source in sources:
+#        feed = feedparser.parse(source["url"])
+
+    feed = feedparser.parse(sources[0]["url"])
     for entry in feed.entries:
         async with db.pool.acquire() as conn:
             existing = await conn.fetchrow("SELECT 1 FROM noticias WHERE url = $1", entry.link)

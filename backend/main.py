@@ -1,11 +1,16 @@
 from fastapi import FastAPI, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
-from background.loop import fetchLoop
-import asyncio
 from contextlib import asynccontextmanager
+
+import asyncio
+
+from background.loop import fetchLoop
+
+
 from db.database import db
 from services.ingesta import ingesta
-from services.noticias import Noticia, get_noticias_i
+from routers.noticias import app as noticias_routes
+from routers.fuentes import app as fuentes_routes
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -32,6 +37,10 @@ app.add_middleware(
     allow_headers=['*'],
 )
     
+app.include_router(noticias_routes, prefix="/api/noticias", tags=["Noticias"])
+app.include_router(fuentes_routes, prefix="/api/fuentes", tags=["Fuentes"])
+
+
 @app.get("/")
 async def root():
     return {"message": "aaa"}
@@ -40,13 +49,4 @@ async def root():
 async def run_ingesta():
     result = await ingesta()
     return {"status": "ok", "result": result}
-
-@app.get("/api/noticias/", response_model= list[Noticia])
-async def get_noticias():
-    try:
-        result = await get_noticias_i()
-        return result
-    except Exception as e:
-        print("Error en get_noticias:", e)
-        raise e
 

@@ -32,3 +32,10 @@ NADA
 
 **T5** (Cristóbal)
 - HU5.3: 3 Puntos
+
+Comandos:
+Backend 
+    uvicorn main:app --reload
+Frontend
+    npm run dev
+    
