@@ -24,9 +24,12 @@ async def ingesta():
                         r = await(client.get(entry.link))
                         content = r.text
                     clean = await asyncio.to_thread(trafilatura.extract, content, include_comments=False)
-                    print(clean)
+                    #print(clean)
                     await conn.execute("INSERT INTO noticias (url, title, rawContent, processed) VALUES ($1,$2,$3,FALSE)", entry.link, entry.title, clean)
-            return 0
+                else:
+                    #las noticias son ordenadas de manera cronologica, si se encuentra uno ya procesado entonces todos los que estan detras ya estan procesados
+                    print("Todas las noticias nuevas de"+ source["url"] +" han sido ingresadas")
+                    break
 
 if __name__ == "__main__":
     import asyncio
