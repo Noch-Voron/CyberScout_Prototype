@@ -1,4 +1,4 @@
-from models import noticiaEstructurada, activoServidor, alertaGenerada
+from .models import noticiaEstructurada, activoServidor, alertaGenerada
 from packaging.version import parse
 from packaging.specifiers import SpecifierSet
 from typing import List

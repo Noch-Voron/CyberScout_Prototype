@@ -11,8 +11,6 @@ from contextlib import asynccontextmanager
 from services.ingesta import ingesta
 from routers.noticias import app as noticias_routes
 from routers.fuentes import app as fuentes_routes
-
-from routers.noticias import router as noticias_router
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await db.connect()
@@ -22,14 +20,6 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # Permite que cualquier HTML (o React de Yu) se conecte
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-app.include_router(noticias_router)
 
 #Para permitir el acceso desde el frontend en localhost:5173
 origins = [
