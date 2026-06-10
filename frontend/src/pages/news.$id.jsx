@@ -37,6 +37,12 @@ export default function NewsDetail() {
         );
     }
 
+    // --- LA CORRECCIÓN EMPIEZA AQUÍ ---
+    // Extraemos las llaves del diccionario dinámico que manda Gemini/Python
+    const affectedDict = noticia?.tags?.activos_afectados || {};
+    const productosAfectados = Object.keys(affectedDict);
+    // --- LA CORRECCIÓN TERMINA AQUÍ ---
+
     return (
     <AppShell>
       <section className="container mx-auto px-4 py-10 max-w-5xl">
@@ -56,17 +62,18 @@ export default function NewsDetail() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                {!noticia.tags?.activos_afectados?.product_name?.length ? (
+                {/* Cambiamos la condición para usar nuestra nueva variable productosAfectados */}
+                {productosAfectados.length === 0 ? (
                 <p className="text-sm text-muted-foreground">
                     Ningún activo del inventario coincide con esta noticia. Aún así puede ser
                     informativa para tu sector.
                 </p>
                 ) : (
                 <div className="flex flex-wrap gap-1">
-                    {noticia.tags.activos_afectados.product_name.map((a, index) => (
+                    {productosAfectados.map((a, index) => (
                     <Badge
                         key={index}
-                        className="bg-primary/10 text-primary border-primary/30 border text-[10px]"
+                        className="bg-primary/10 text-primary border-primary/30 border text-[10px] capitalize"
                     >
                         {a}
                     </Badge>

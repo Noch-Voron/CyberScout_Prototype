@@ -67,24 +67,33 @@ def evaluar_noticia(noticia: noticiaEstructurada, inventario_cliente: List[activ
     for server in inventario_cliente:
         for nombre_vuln, versiones_vuln in noticia.activos_afectados.items():
             
-            match = "none" # puede ser "partial" o "full"
+            # 1. Normalizamos lo que dice Gemini a minúsculas
+            nombre_vuln_limpio = nombre_vuln.lower() 
+            match = "none" 
 
-            if nombre_vuln in server.software_instalado:
-
-                version = server.software_instalado[nombre_vuln]
-                match = "partial" #software es afectado, aún no se determina si la versión es la misma
-                if check_version(version, versiones_vuln):
-                    match = "full" # versión es afectada, bad.
+            # 2. Búsqueda flexible: revisamos cada software del servidor
+            for software_instalado, version in server.software_instalado.items():
                 
-                nueva_alerta = alertaGenerada(
-                    id_servidor=server.id,
-                    nombre_servidor=server.nombre,
-                    software_afectado=nombre_vuln,
-                    nivel_match=match,
-                    noticia_original=noticia
-                )
+                # Si "apache" está dentro de "apache http server" (o viceversa)
+                if software_instalado.lower() in nombre_vuln_limpio or nombre_vuln_limpio in software_instalado.lower():
+                    
+                    match = "partial" # Es el mismo software
+                    
+                    # 3. Revisamos si la versión también coincide
+                    if check_version(version, versiones_vuln):
+                        match = "full" 
+                    
+                    nueva_alerta = alertaGenerada(
+                        id_servidor=server.id,
+                        nombre_servidor=server.nombre,
+                        software_afectado=software_instalado, # Usamos el nombre limpio de nuestro inventario
+                        nivel_match=match,
+                        noticia_original=noticia
+                    )
 
-                alertas_generadas.append(nueva_alerta)
+                    alertas_generadas.append(nueva_alerta)
+                    # Si ya encontró coincidencia para este software, dejamos de buscar en este servidor
+                    break 
 
     return alertas_generadas
 
@@ -135,7 +144,7 @@ if __name__ == "__main__":
     for i, noticia in enumerate(bateria_de_noticias, 1):
         print(f"--- Evaluando Noticia {i}: {noticia.cve_id} ---")
         sleep(1)
-        resultados = evaluar_noticia(noticia)
+        resultados = evaluar_noticia(noticia, Inventario_Local)
         
         if not resultados:
             print("  Ningún servidor afectado (None).")

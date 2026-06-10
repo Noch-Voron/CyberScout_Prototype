@@ -11,6 +11,7 @@ from contextlib import asynccontextmanager
 from services.ingesta import ingesta
 from routers.noticias import app as noticias_routes
 from routers.fuentes import app as fuentes_routes
+from routers import inventario
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await db.connect()
@@ -37,6 +38,7 @@ app.add_middleware(
     
 app.include_router(noticias_routes, prefix="/api/noticias", tags=["Noticias"])
 app.include_router(fuentes_routes, prefix="/api/fuentes", tags=["Fuentes"])
+app.include_router(inventario.router)
 
 
 @app.get("/")
@@ -59,7 +61,7 @@ async def sincronizar_alertas(solicitud: SolicitudSincronización):
         ) # se seleccionan las id y tags de noticias donde no ha sido procesado por el cliente.
     
     if not noticias_nuevas_db:
-        return {"nuevas_alertas": [], "id_último_sincronizado": solicitud.id_ultima_noticia}
+        return {"nuevas_alertas": [], "id_ultimo_sincronizado": solicitud.id_ultima_noticia}
     
 
     # transformar datos db a modelos.

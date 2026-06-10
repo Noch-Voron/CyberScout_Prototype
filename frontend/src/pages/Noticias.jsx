@@ -36,10 +36,12 @@ export default function Noticias() {
         return (Array.isArray(noticias) ? noticias : [])
         .filter((n) => {
             if (scope !== "relevant") return true;
-            // relevante si tiene activos afectados
-            const products = n.tags?.activos_afectados?.product_name ?? [];
-            return Array.isArray(products) &&
-                    products.length > 0;
+            
+            // CORRECCIÓN: Extraemos las llaves del diccionario de activos que envía el Backend
+            const affectedDict = n.tags?.activos_afectados || {};
+            const products = Object.keys(affectedDict);
+            
+            return products.length > 0;
             })
         .filter((n) => sev === "all" ? true : n.tags?.severidad === sev)
         .filter((n) => {
@@ -48,7 +50,7 @@ export default function Noticias() {
             return (
             n.title?.toLowerCase().includes(needle) ||
             n.rawcontent?.toLowerCase().includes(needle) ||
-            n.tags?.categoria??((t) => t.includes(needle)) ||
+            n.tags?.categoria?.toLowerCase().includes(needle) ||
             (n.cve_id?.toLowerCase().includes(needle) ?? false)
             );
         })
@@ -103,10 +105,10 @@ export default function Noticias() {
                 </SelectTrigger>
                 <SelectContent>
                     <SelectItem value="all">Todas</SelectItem>
-                    <SelectItem value="critica">Crítica</SelectItem>
-                    <SelectItem value="alta">Alta</SelectItem>
-                    <SelectItem value="media">Media</SelectItem>
-                    <SelectItem value="baja">Baja</SelectItem>
+                    <SelectItem value="Critico">Crítica</SelectItem>
+                    <SelectItem value="Alto">Alta</SelectItem>
+                    <SelectItem value="Medio">Media</SelectItem>
+                    <SelectItem value="Bajo">Baja</SelectItem>
                 </SelectContent>
                 </Select>
                 <Select value={scope} onValueChange={setScope}>
@@ -114,7 +116,7 @@ export default function Noticias() {
                     <SelectValue placeholder="Alcance" />
                 </SelectTrigger>
                 <SelectContent>
-                    <SelectItem value="relevant">Solo relevantes a mi inventario</SelectItem>
+                    <SelectItem value="relevant">Con activos detectados</SelectItem>
                     <SelectItem value="all">Todas las noticias</SelectItem>
                 </SelectContent>
                 </Select>
@@ -175,14 +177,18 @@ export default function Noticias() {
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {filtered.map((n) => (
+                    {filtered.map((n) => {
+                    // CORRECCIÓN: Extraemos las llaves para la tabla
+                    const productsList = Object.keys(n.tags?.activos_afectados || {});
+                    
+                    return (
                     <TableRow key={n.id}>
                         <TableCell>
                         <Badge
                             variant="outline"
                             className={`uppercase text-[10px] tracking-wider border ${severityClasses(n.tags?.severidad)}`}
                         >
-                            {n.tags.severidad}
+                            {n.tags?.severidad}
                         </Badge>
                         </TableCell>
                         <TableCell className="max-w-md">
@@ -203,19 +209,19 @@ export default function Noticias() {
                         <TableCell>
                         <div className="flex flex-wrap gap-1">
                             <Badge variant="secondary" className="font-mono text-[10px]">
-                                {n.tags.categoria}
+                                {n.tags?.categoria}
                             </Badge>
                         </div>
                         </TableCell>
                         <TableCell>
-                        {n.tags.activos_afectados.product_name.length === 0 ? (
+                        {productsList.length === 0 ? (
                             <span className="text-xs text-muted-foreground">—</span>
                         ) : (
                             <div className="flex flex-wrap gap-1">
-                            {n.tags.activos_afectados.product_name.map((a,index) => (
+                            {productsList.map((a,index) => (
                                 <Badge
                                 key={index}
-                                className="bg-primary/10 text-primary border-primary/30 border text-[10px]"
+                                className="bg-primary/10 text-primary border-primary/30 border text-[10px] capitalize"
                                 >
                                 {a}
                                 </Badge>
@@ -234,7 +240,7 @@ export default function Noticias() {
                         </Button>
                         </TableCell>
                     </TableRow>
-                    ))}
+                    )})}
                 </TableBody>
                 </Table>
             </Card>
@@ -242,4 +248,4 @@ export default function Noticias() {
         </section>
         </AppShell>
     );
-    }
+}

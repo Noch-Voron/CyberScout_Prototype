@@ -53,7 +53,7 @@ async def get_fuente_id(fuente_id: int):
         return FuenteData(
             id=fuente["id"],
             url=fuente["url"],
-            processdate=fuente["processdate"],
+            processdate = fuente["processdate"],
             processed=fuente["processed"]
         )
 

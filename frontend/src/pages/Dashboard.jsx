@@ -17,7 +17,11 @@ import { use_getNoticias } from "../hooks/useNoticias"
 export default function Dashboard() {
   const { noticias } = use_getNoticias();
 
-  const relevant = noticias.filter((n) => (n.tags?.activos_afectados?.product_name?.length > 0) );
+  // CORRECCIÓN 1: Filtramos usando las llaves del diccionario
+  const relevant = noticias.filter((n) => {
+    const affectedDict = n.tags?.activos_afectados || {};
+    return Object.keys(affectedDict).length > 0;
+  });
   
   const sorted = [...relevant].sort((a, b) => {
     const rankA = severityOrder[a.tags?.severidad];
@@ -34,7 +38,7 @@ export default function Dashboard() {
 
   const total = noticias.length;
   const relevantPct = total ? Math.round((relevant.length / total) * 100) : 0;
-  const critical = relevant.filter((n) => n.tags?.severidad === "critical").length;
+  const critical = relevant.filter((n) => n.tags?.severidad === "Crítico" || n.tags?.severidad === "critical").length; // Ajusté por si acaso viene con mayúscula
 
   return (
     <AppShell>
@@ -92,7 +96,12 @@ export default function Dashboard() {
           </Card>
         ) : (
           <div className="grid gap-3">
-            {sorted.map((n) => (
+            {sorted.map((n) => {
+              // CORRECCIÓN 2: Extraemos los productos afectados para cada noticia
+              const affectedDict = n.tags?.activos_afectados || {};
+              const productosAfectados = Object.keys(affectedDict);
+
+              return (
               <Link key={n.id}
                 to="/news/$id"
                 params={{ id: n.id }}
@@ -105,9 +114,9 @@ export default function Dashboard() {
                     >
                       {n.tags?.severidad?? "sin severidad"}
                     </Badge>
-                    {n.cve && (
+                    {n.cve_id && (
                         <div className="mt-2 text-[10px] font-mono text-muted-foreground">
-                          {n.tags.cve_id}
+                          {n.cve_id}
                         </div>
                       )}
                     <div className="flex-1 min-w-0">
@@ -130,11 +139,13 @@ export default function Dashboard() {
                           </Badge>
                         
                       </div>
-                      {n.tags?.activos_afectados?.product_name?.length > 0 && (
+                      
+                      {/* CORRECCIÓN 3: Dibujamos las etiquetas si existen productos afectados */}
+                      {productosAfectados.length > 0 && (
                         <div className="mt-3 text-xs flex flex-wrap items-center gap-2">
                           <span className="text-foreground font-medium">Activos afectados:</span>
-                          {n.tags?.activos_afectados?.product_name?.map((a,index) => (
-                            <Badge key={index} className="bg-primary/10 text-primary border-primary/30 border">
+                          {productosAfectados.map((a,index) => (
+                            <Badge key={index} className="bg-primary/10 text-primary border-primary/30 border capitalize">
                               {a}
                             </Badge>
                           ))}
@@ -145,7 +156,7 @@ export default function Dashboard() {
                   </CardContent>
                 </Card>
               </Link>
-            ))}
+            )})}
           </div>
         )}
       </section>

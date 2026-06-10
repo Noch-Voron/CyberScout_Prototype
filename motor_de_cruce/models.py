@@ -16,12 +16,12 @@ class softwareVulnerable(BaseModel):
 
 class noticiaEstructurada(BaseModel):
     cve_id: str | None # por si no hay (caso mayoritorio según entiendo)
-    severidad: str # tipo crítico, alto, medio, bajo
+    severidad: str | None = None # tipo crítico, alto, medio, bajo
     activos_afectados: Dict[str, List[str]] # Linux Fedora: [42,43,44]
     acción_recomendada: str = "" # borrar si no se hace
     puntuacion_cvss: str | None = None
     tipo_vulnerabilidad: str | None = None # none en caso de que no sea claro
-    estado_vulnerabilidad: str = "" # como, sin parche o con parche, etc. 
+    estado_vulnerabilidad: str | None = "Desconocido" # como, sin parche o con parche, etc. 
 
     # Respecto a este, pienso que podría ser importante el mantener una id única y asociable a una misma vulnerabilidad, y dado que potencialmente puede mejorar o empeorar la situación se tendría que actualizar la info respecto a esa. No sé solo una idea.
 

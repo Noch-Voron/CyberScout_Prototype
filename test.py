@@ -11,12 +11,14 @@ async def inyectar_noticia_prueba():
     conn = await asyncpg.connect(os.getenv("dsn"))
     
     
-    titulo = "Vulnerabilidad Crítica en Servidores Linux V2"
-    url = "https://cyberscout-test.com/alerta-linux-v2"
+    titulo = "Vulnerabilidad Zero-Day en Apache (Path Traversal)"
+    url = "https://cyberscout-test.com/alerta-apache-cve-2021-41773"
     texto_crudo = """
-    Se ha detectado una nueva variante de la vulnerabilidad en servidores Linux. 
-    Afecta a Ubuntu 22.04 y permite a los atacantes escalar privilegios a root. 
-    CVE-2024-8888. Aplicar parche urgente.
+    CISA y expertos en ciberseguridad han detectado explotación activa de una vulnerabilidad 
+    crítica de Path Traversal (CVE-2021-41773) en Apache HTTP Server. 
+    Esta falla afecta específicamente a la versión 2.4.49 y permite a un atacante no autenticado 
+    leer archivos arbitrarios del sistema e incluso ejecutar código remoto (RCE).
+    Urge actualizar los servidores afectados inmediatamente.
     """
     
     await conn.execute("""

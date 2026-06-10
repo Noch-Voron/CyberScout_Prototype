@@ -23,7 +23,7 @@ class NoticiaData(BaseModel):
 class FuenteData(BaseModel):
     id: int
     url: str
-    processdate: datetime
+    processdate: Optional[datetime] = None
     processed: bool
     
 class FuenteCreate(BaseModel):
