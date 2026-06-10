@@ -5,7 +5,7 @@ import asyncio
 from db.database import db
 
 #hardcodeado mientras aun no este la hu3 con las fuentes dinamicas/disponibles en db
-sources = ["https://feeds.feedburner.com/TheHackersNews"]
+sources = []#"https://feeds.feedburner.com/TheHackersNews"]
 
 async def ingesta():
     print("ingesta")
