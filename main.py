@@ -52,28 +52,40 @@ class SolicitudSincronización(BaseModel):
 
 @app.post("/api/v1/sincronizar")
 async def sincronizar_alertas(solicitud: SolicitudSincronización):
-    alertas_totales =[]
+    alertas_totales = []
 
-    async with db.pool.acquire() as conn: # maybe habrá que cambiar esto.
+    async with db.pool.acquire() as conn:
         noticias_nuevas_db = await conn.fetch(
-            "SELECT id, tags FROM noticias WHERE processed = TRUE and id >$1",
+            "SELECT id, title, url, rawcontent, tags, extractdate FROM noticias WHERE processed = TRUE and id > $1",
             solicitud.id_ultima_noticia
-        ) # se seleccionan las id y tags de noticias donde no ha sido procesado por el cliente.
+        )
     
     if not noticias_nuevas_db:
         return {"nuevas_alertas": [], "id_ultimo_sincronizado": solicitud.id_ultima_noticia}
     
-
-    # transformar datos db a modelos.
     id_ultimo_procesado = solicitud.id_ultima_noticia
 
     for fila in noticias_nuevas_db:
-        diccionario_noticia = json.loads(fila["tags"]) # unccoment if fila["tags"] es string
-        noticia = noticiaEstructurada(**diccionario_noticia)
+        if not fila["tags"]:
+            if fila["id"] > id_ultimo_procesado:
+                id_ultimo_procesado = fila["id"]
+            continue
 
-        alertas = evaluar_noticia(noticia, solicitud.inventario_local) # esta es la llamada al motor de cruce.
-        if alertas:
-            alertas_totales.extend(alertas)
+        try:
+            diccionario_noticia = json.loads(fila["tags"]) if isinstance(fila["tags"], str) else fila["tags"]
+            noticia = noticiaEstructurada(**diccionario_noticia)
+
+            alertas = evaluar_noticia(noticia, solicitud.inventario_local)
+            for alerta in alertas:
+                alerta_dict = alerta.model_dump()
+                alerta_dict["noticia_id"] = fila["id"]
+                alerta_dict["noticia_titulo"] = fila["title"]
+                alerta_dict["noticia_url"] = fila["url"]
+                alerta_dict["noticia_rawcontent"] = fila["rawcontent"]
+                alerta_dict["noticia_extractdate"] = str(fila["extractdate"]) if fila["extractdate"] else None
+                alertas_totales.append(alerta_dict)
+        except Exception as e:
+            print(f"Error procesando tags para noticia ID {fila['id']}: {e}")
 
         if fila["id"] > id_ultimo_procesado:
             id_ultimo_procesado = fila["id"]

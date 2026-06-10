@@ -12,33 +12,32 @@ import {
   ExternalLink,
 } from "lucide-react";
 import {severityClasses, severityOrder, formatDate, getFuente} from "../utils/funciones";
-import { use_getNoticias } from "../hooks/useNoticias"
+import { use_getNoticias } from "../hooks/useNoticias";
+import { useSincronizar } from "../hooks/useSincronizar";
 
 export default function Dashboard() {
   const { noticias } = use_getNoticias();
+  const { alertas } = useSincronizar();
 
-  // CORRECCIÓN 1: Filtramos usando las llaves del diccionario
-  const relevant = noticias.filter((n) => {
-    const affectedDict = n.tags?.activos_afectados || {};
-    return Object.keys(affectedDict).length > 0;
-  });
-  
-  const sorted = [...relevant].sort((a, b) => {
-    const rankA = severityOrder[a.tags?.severidad];
-    const rankB = severityOrder[b.tags?.severidad];
+  const sortedAlertas = [...alertas].sort((a, b) => {
+    const rankA = severityOrder[a.noticia_original?.severidad] ?? 999;
+    const rankB = severityOrder[b.noticia_original?.severidad] ?? 999;
 
-    // primero por severidad
     if (rankA !== rankB) {
       return rankA - rankB;
     }
 
-    // si tienen la misma severidad, ordena por fecha descendente
-    return +new Date(b.extractdate) - +new Date(a.extractdate);
+    const dateA = a.noticia_extractdate ? new Date(a.noticia_extractdate) : 0;
+    const dateB = b.noticia_extractdate ? new Date(b.noticia_extractdate) : 0;
+    return dateB - dateA;
   });
 
   const total = noticias.length;
-  const relevantPct = total ? Math.round((relevant.length / total) * 100) : 0;
-  const critical = relevant.filter((n) => n.tags?.severidad === "Crítico" || n.tags?.severidad === "critical").length; // Ajusté por si acaso viene con mayúscula
+  const relevantPct = total ? Math.round((alertas.length / total) * 100) : 0;
+  const critical = alertas.filter((a) => {
+    const sev = a.noticia_original?.severidad?.toLowerCase();
+    return sev === "crítico" || sev === "critical" || a.nivel_match === "full";
+  }).length;
 
   return (
     <AppShell>
@@ -56,14 +55,14 @@ export default function Dashboard() {
             <Stat
               icon={<ShieldAlert className="size-5" />}
               label="Alertas relevantes"
-              value={String(relevant.length)}
+              value={String(alertas.length)}
               hint={`${critical} críticas`}
             />
             <Stat
               icon={<TrendingUp className="size-5" />}
               label="Relevancia"
               value={`${relevantPct}%`}
-              hint={`${relevant.length} de ${total} clasificadas`}
+              hint={`${alertas.length} de ${total} clasificadas`}
             />
           </div>
         </div>
@@ -83,10 +82,10 @@ export default function Dashboard() {
           </Button>
         </div>
 
-          {sorted.length === 0 ? (
+          {sortedAlertas.length === 0 ? (
           <Card>
             <CardContent className="py-16 text-center text-muted-foreground">
-              No hay noticias relevantes. Agrega tecnologías a tu inventario para empezar a filtrar.
+              No hay alertas detectadas para tu inventario actual.
               <div className="mt-4">
                 <Button asChild>
                   <Link to="/inventario">Ir al inventario</Link>
@@ -96,67 +95,67 @@ export default function Dashboard() {
           </Card>
         ) : (
           <div className="grid gap-3">
-            {sorted.map((n) => {
-              // CORRECCIÓN 2: Extraemos los productos afectados para cada noticia
-              const affectedDict = n.tags?.activos_afectados || {};
-              const productosAfectados = Object.keys(affectedDict);
-
-              return (
-              <Link key={n.id}
-                to="/news/$id"
-                params={{ id: n.id }}
+            {sortedAlertas.map((a, idx) => (
+              <Link key={`${a.noticia_id}-${a.id_servidor}-${a.software_afectado}-${idx}`}
+                to={`/news/${a.noticia_id}`}
                 className="group block">
                 <Card className="transition-all hover:shadow-elegant hover:border-primary/40 bg-[image:var(--gradient-card)]">
                   <CardContent className="p-5 flex gap-4 items-start">
-                    <Badge
-                      variant="outline"
-                      className={`uppercase text-[10px] tracking-wider border ${severityClasses(n.tags?.severidad ?? "sin severidad")}`}
-                    >
-                      {n.tags?.severidad?? "sin severidad"}
-                    </Badge>
-                    {n.cve_id && (
-                        <div className="mt-2 text-[10px] font-mono text-muted-foreground">
-                          {n.cve_id}
-                        </div>
-                      )}
+                    <div className="flex flex-col gap-2">
+                      <Badge
+                        variant="outline"
+                        className={`uppercase text-[10px] tracking-wider border ${severityClasses(a.noticia_original?.severidad ?? "sin severidad")}`}
+                      >
+                        {a.noticia_original?.severidad ?? "sin severidad"}
+                      </Badge>
+                      <Badge
+                        className={`text-[9px] font-bold uppercase tracking-wider ${
+                          a.nivel_match === "full"
+                            ? "bg-red-500/20 text-red-500 border border-red-500/40"
+                            : "bg-amber-500/20 text-amber-500 border border-amber-500/40"
+                        }`}
+                      >
+                        {a.nivel_match === "full" ? "Match Total" : "Match Parcial"}
+                      </Badge>
+                    </div>
+
                     <div className="flex-1 min-w-0">
                       <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-                        <span>{getFuente(n.url)}</span>
+                        <span>{getFuente(a.noticia_url)}</span>
                         <span>·</span>
-                        <span>Extraido el {formatDate(n.extractdate)}</span>
+                        <span>Extraído el {formatDate(a.noticia_extractdate)}</span>
                       </div>
                       <h3 className="mt-1 font-semibold text-lg leading-snug group-hover:text-primary transition-colors">
-                        {n.title}
+                        {a.noticia_titulo}
                       </h3>
                       <p className="mt-1 text-sm text-muted-foreground line-clamp-2">
-                        {n.rawcontent.length > 100
-                        ? n.rawcontent.substring(0, 100) + "..."
-                        : n.rawcontent}
+                        {a.noticia_rawcontent && a.noticia_rawcontent.length > 100
+                          ? a.noticia_rawcontent.substring(0, 100) + "..."
+                          : a.noticia_rawcontent}
                       </p>
-                      <div className="mt-3 flex flex-wrap gap-1.5">
-                          <Badge variant="secondary" className="font-mono text-[10px]">
-                            {n.tags?.categoria}
-                          </Badge>
-                        
-                      </div>
                       
-                      {/* CORRECCIÓN 3: Dibujamos las etiquetas si existen productos afectados */}
-                      {productosAfectados.length > 0 && (
-                        <div className="mt-3 text-xs flex flex-wrap items-center gap-2">
-                          <span className="text-foreground font-medium">Activos afectados:</span>
-                          {productosAfectados.map((a,index) => (
-                            <Badge key={index} className="bg-primary/10 text-primary border-primary/30 border capitalize">
-                              {a}
-                            </Badge>
-                          ))}
-                        </div>
-                      )}
+                      <div className="mt-3 flex flex-wrap gap-2 items-center">
+                        <span className="text-xs font-semibold text-foreground/80">Servidor:</span>
+                        <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20">
+                          {a.nombre_servidor} ({a.software_afectado})
+                        </Badge>
+                        {a.noticia_original?.cve_id && (
+                          <Badge variant="secondary" className="font-mono text-[10px]">
+                            {a.noticia_original.cve_id}
+                          </Badge>
+                        )}
+                        {a.noticia_original?.tipo_vulnerabilidad && (
+                          <Badge variant="secondary" className="font-mono text-[10px]">
+                            {a.noticia_original.tipo_vulnerabilidad}
+                          </Badge>
+                        )}
+                      </div>
                     </div>
                     <ExternalLink className="size-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity mt-1" />
                   </CardContent>
                 </Card>
               </Link>
-            )})}
+            ))}
           </div>
         )}
       </section>

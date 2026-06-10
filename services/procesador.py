@@ -1,4 +1,5 @@
 import json
+import asyncio
 from db.database import db
 from services.clasificador import clasificar_noticias
 from services.notificador import notificador
@@ -74,6 +75,9 @@ async def procesar_noticias():
                     
                 except Exception as e:
                     print(f" Error procesando la noticia ID {noticia_id}: {e}")
+                
+                # Respetar el límite de solicitudes de la API de Gemini (ej. 15s - 20s de espera)
+                await asyncio.sleep(15)
                     
     except Exception as e:
         print(f" Error fatal en el loop del procesador: {e}")
