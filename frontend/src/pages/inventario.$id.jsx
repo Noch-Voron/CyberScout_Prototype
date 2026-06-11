@@ -6,7 +6,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
 import { Badge } from "../components/ui/badge";
 import { Button } from "../components/ui/button";
 
-import { ArrowLeft, ShieldAlert } from "lucide-react";
+import {severityClasses, severityOrder, formatDate, getFuente} from "../utils/funciones";
+
+import { ArrowLeft, ShieldAlert, ExternalLink, } from "lucide-react";
 
 export default function InventarioDetail() {
 
@@ -58,7 +60,7 @@ export default function InventarioDetail() {
         </Button>
         <div className="grid lg:grid-cols-5 gap-6">
             {/* CONTENIDO PRINCIPAL */}
-            <div className="lg:col-span-2 space-y-4">
+            <div className="lg:col-span-2  items-start">
                 <div className="bg-white p-5 rounded-lg shadow-md border-l-4 border-blue-600 hover:shadow-lg transition-shadow">
                 <h3 className="text-xl font-bold text-gray-800">{servidor.nombre}</h3>
                 <p className="text-sm text-gray-500 mb-4 font-mono">{servidor.entorno}</p>
@@ -78,7 +80,7 @@ export default function InventarioDetail() {
             </div>
 
             {/* SIDEBAR */}
-            <div className="lg:col-span-3 space-y-6">
+            <div className="lg:col-span-3  items-start">
             <Card className="mt-6">
             <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -96,35 +98,65 @@ export default function InventarioDetail() {
                 ) : (
                 <div className="space-y-3">
 
-                    {alertas.map(alerta => (
+                    {alertas.map(a => (
 
                     <Link
-                        key={`${alerta.noticia_id}-${alerta.software_afectado}`}
-                        to={`/noticias/${alerta.noticia_id}`}
+                        key={`${a.noticia_id}-${a.software_afectado}`}
+                        to={`/noticias/${a.noticia_id}`}
                         className="block"
                     >
-                        <Card className="hover:border-primary transition-colors">
-                        <CardContent className="p-4">
 
-                            <div className="flex items-center justify-between">
-
-                            <div>
-                                <div className="font-medium">
-                                {alerta.software_afectado}
+                        <Card className="transition-all hover:shadow-elegant hover:border-primary/40 bg-[image:var(--gradient-card)]">
+                            <CardContent className="p-5 flex gap-4 items-start">
+                            <div className="flex flex-col gap-2">
+                                <Badge
+                                variant="outline"
+                                className={`uppercase text-[10px] tracking-wider border ${severityClasses(a.noticia_original?.severidad ?? "sin severidad")}`}
+                                >
+                                {a.noticia_original?.severidad ?? "sin severidad"}
+                                </Badge>
+                                <Badge
+                                className={`text-[9px] font-bold uppercase tracking-wider ${
+                                    a.nivel_match === "full"
+                                    ? "bg-red-500/20 text-red-500 border border-red-500/40"
+                                    : "bg-amber-500/20 text-amber-500 border border-amber-500/40"
+                                }`}
+                                >
+                                {a.nivel_match === "full" ? "Match Total" : "Match Parcial"}
+                                </Badge>
+                            </div>
+        
+                            <div className="flex-1 min-w-0">
+                                <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                                <span>{getFuente(a.noticia_url)}</span>
+                                <span>·</span>
+                                <span>Extraído el {formatDate(a.noticia_extractdate)}</span>
                                 </div>
-
-                                <div className="text-sm text-muted-foreground">
-                                Noticia #{alerta.noticia_id}
+                                <h3 className="mt-1 font-semibold text-lg leading-snug group-hover:text-primary transition-colors">
+                                {a.noticia_titulo}
+                                </h3>
+                                <p className="mt-1 text-sm text-muted-foreground line-clamp-2">
+                                {a.noticia_rawcontent && a.noticia_rawcontent.length > 100
+                                    ? a.noticia_rawcontent.substring(0, 100) + "..."
+                                    : a.noticia_rawcontent}
+                                </p>
+                                
+                                <div className="mt-3 flex flex-wrap gap-2 items-center">
+                                
+                                {a.noticia_original?.cve_id && (
+                                    <Badge variant="secondary" className="font-mono text-[10px]">
+                                    {a.noticia_original.cve_id}
+                                    </Badge>
+                                )}
+                                {a.noticia_original?.tipo_vulnerabilidad && (
+                                    <Badge variant="secondary" className="font-mono text-[10px]">
+                                    {a.noticia_original.tipo_vulnerabilidad}
+                                    </Badge>
+                                )}
                                 </div>
                             </div>
-
-                            <Badge variant="destructive">
-                                Vulnerable
-                            </Badge>
-
-                            </div>
-
-                        </CardContent>
+                            <ExternalLink className="size-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity mt-1" />
+                            </CardContent>
                         </Card>
                     </Link>
 
