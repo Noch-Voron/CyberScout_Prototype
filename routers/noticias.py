@@ -1,7 +1,10 @@
 from fastapi import APIRouter
+from fastapi.responses import StreamingResponse
 from db.database import db
 from squemas.squemas import NoticiaData
+from services.notificador import notificador
 import json
+import asyncio
 
 app = APIRouter()
 
@@ -37,3 +40,19 @@ async def get_noticia_id(noticia_id: int):
                 extractdate = noticia["extractdate"]
                 )
     return aux
+
+@app.get("/stream")
+async def stream_noticias():
+    async def event_generator():
+        cola = await notificador.conectar_cliente()
+        try:
+            while True:
+                alerta = await cola.get()
+                yield f"data: {json.dumps(alerta)}\n\n"
+        except asyncio.CancelledError:
+            notificador.desconectar_cliente(cola)
+        except Exception as e:
+            notificador.desconectar_cliente(cola)
+            print("Error en stream_noticias:", e)
+
+    return StreamingResponse(event_generator(), media_type="text/event-stream")

@@ -176,8 +176,8 @@ async def inyectar_mock_news():
             tags_json = json.dumps(news["tags"])
             
             await conn.execute("""
-                INSERT INTO noticias (title, url, rawcontent, processed, tags, extractdate, processdate)
-                VALUES ($1, $2, $3, TRUE, $4, NOW(), NOW())
+                INSERT INTO noticias (title, url, rawcontent, processed, tags, processdate)
+                VALUES ($1, $2, $3, TRUE, $4, NOW())
                 ON CONFLICT (url) DO NOTHING
             """, news["title"], news["url"], news["rawcontent"], tags_json)
             exito += 1
