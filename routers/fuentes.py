@@ -1,10 +1,11 @@
 from fastapi import APIRouter, HTTPException
+import feedparser
 
 from db.database import db
 from squemas.squemas import FuenteData, FuenteCreate
 
 app = APIRouter()
-
+    
 @app.get("/", response_model=list[FuenteData])
 async def get_fuentes():
     try:
@@ -62,17 +63,80 @@ async def get_fuente_id(fuente_id: int):
         raise e
 
 
+import requests
+import feedparser
+
+
+def validar_feed(url: str):
+    try:
+        response = requests.get(
+            url,
+            timeout=10,
+            headers={
+                "User-Agent": "CyberScout/1.0"
+            }
+        )
+
+    except requests.exceptions.SSLError:
+        return False, "La fuente posee un certificado SSL inválido."
+
+    except requests.exceptions.ConnectionError:
+        return False, "No fue posible conectar con la fuente."
+
+    except requests.exceptions.Timeout:
+        return False, "La fuente tardó demasiado en responder."
+
+    except requests.exceptions.RequestException as e:
+        return False, f"Error al acceder a la fuente: {str(e)}"
+
+    if response.status_code >= 400:
+        return False, f"La fuente respondió con código {response.status_code}."
+
+    try:
+        feed = feedparser.parse(response.content)
+
+        tiene_feed = (
+            len(feed.entries) > 0
+            or feed.feed.get("title")
+        )
+
+        if not tiene_feed:
+            return False, "No se detectó un feed RSS/Atom válido."
+
+        return True, "Feed válido"
+
+    except Exception:
+        return False, "No fue posible procesar el feed."
+
+
 @app.post("/", response_model=FuenteData)
 async def add_fuente(fuente: FuenteCreate):
+    
+    # Validar RSS
+    es_valido, mensaje = validar_feed(fuente.url)
+
+    if not es_valido:
+        raise HTTPException(
+            status_code=400,
+            detail=mensaje
+        )
+
 
     async with db.pool.acquire() as conn:
 
         row = await conn.fetchrow("""
             INSERT INTO fuentes (url, processdate, processed)
             VALUES ($1, NOW(), FALSE)
+            ON CONFLICT (url) DO NOTHING
             RETURNING id, url, processdate, processed
         """, fuente.url)
-
+        
+        if row is None:
+            raise HTTPException(
+                status_code=409,
+                detail="La fuente ya se encuentra registrada."
+            )
+        
     return FuenteData(
         id=row["id"],
         url=row["url"],

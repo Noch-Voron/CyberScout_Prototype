@@ -7,5 +7,5 @@ async def fetchLoop():
     intervalo = int(os.getenv("FETCH_INTERVAL", 1800))
     while True:
         await ingesta()
-        await procesar_noticias()
+        #await procesar_noticias()
         await asyncio.sleep(intervalo)

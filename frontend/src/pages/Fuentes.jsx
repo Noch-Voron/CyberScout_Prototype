@@ -7,6 +7,15 @@ import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Badge } from "../components/ui/badge";
 
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../components/ui/dialog";
+
 import { Plus, Trash2, RefreshCw, Rss } from "lucide-react";
 
 import {
@@ -23,42 +32,65 @@ export default function Fuentes() {
   const [url, setUrl] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const [mensaje, setMensaje] = useState(null);
+  const [tipoMensaje, setTipoMensaje] = useState("success");
+  
   const handleAdd = async () => {
-    if (!url.trim()) return;
+  if (!url.trim()) {
+    setTipoMensaje("error");
+    setMensaje("Debe ingresar una URL");
+    return;
+  }
 
-    try {
-      setLoading(true);
+  try {
+    setLoading(true);
 
-      await addFuente(url);
+    await addFuente(url);
 
-      setUrl("");
-      refetch();
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
+    setTipoMensaje("success");
+    setMensaje("Fuente agregada correctamente");
+
+    setUrl("");
+    refetch();
+  } catch (err) {
+    setTipoMensaje("error");
+    setMensaje(
+      err?.message || "No fue posible agregar la fuente"
+    );
+  } finally {
+    setLoading(false);
+  }
   };
 
   const handleDelete = async (id) => {
     try {
       await deleteFuente(id);
+
+      setTipoMensaje("success");
+      setMensaje("Fuente eliminada");
+
       refetch();
     } catch (err) {
-      console.error(err);
+      setTipoMensaje("error");
+      setMensaje(
+        err?.message || "Error eliminando la fuente"
+      );
     }
   };
 
   const handleIngest = async () => {
     try {
-        await runIngest();
+      await runIngest();
 
-        // opcional: recargar la lista
-        refetch();
+      setTipoMensaje("success");
+      setMensaje("Ingesta ejecutada correctamente");
 
-        console.log("Ingesta completada");
+      refetch();
     } catch (err) {
-        console.error(err);
+      setTipoMensaje("error");
+      setMensaje(
+        err?.message || "Error durante la ingesta"
+      );
     }
   };
 
@@ -77,18 +109,6 @@ export default function Fuentes() {
               Fuentes RSS configuradas en el sistema
             </p>
           </div>
-
-          <Button variant="outline" onClick={refetch}>
-            <RefreshCw className="size-4 mr-2" />
-            Actualizar
-          </Button>
-          <Button
-            variant="outline"
-            onClick={handleIngest}
-            >
-            <RefreshCw className="size-4 mr-2" />
-            Ejecutar ingesta
-           </Button>
         </div>
 
         {/* Formulario */}
@@ -109,6 +129,19 @@ export default function Fuentes() {
               Agregar
             </Button>
           </CardContent>
+            {mensaje && (
+              <div className="flex ml-8 mb-4">
+                <div
+                  className={`flex items-center gap-2 text-sm font-medium ${
+                    tipoMensaje === "error"
+                      ? "text-red-500"
+                      : "text-green-600"
+                  }`}
+                >
+                  <span>{mensaje}</span>
+                </div>
+              </div>
+            )}
         </Card>
 
         {/* Error */}
