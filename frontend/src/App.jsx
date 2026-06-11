@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Dashboard from "./pages/Dashboard";
 import Noticias from "./pages/Noticias";
 import NewsDetail from "./pages/news.$id";
+import InventarioDetail from "./pages/inventario.$id";
 import Fuentes from "./pages/Fuentes";
 import Inventario from "./pages/Inventario";
 import Auditoria from "./pages/Auditoria";
@@ -17,6 +18,7 @@ export default function App() {
         <Route path="/Auditoria" element={<Auditoria />} />
         <Route path="/Inventario" element={<Inventario />} />
         <Route path="/news/:id" element={<NewsDetail />} />
+        <Route path="/inventario/:id" element={<InventarioDetail />} />
 
       </Routes>
     </BrowserRouter>

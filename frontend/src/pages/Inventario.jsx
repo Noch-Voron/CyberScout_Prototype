@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useState, useEffect } from 'react';
 import { AppShell } from "../components/AppShell";
 
@@ -53,22 +54,24 @@ export default function Inventario() {
         {/* Aquí inyectamos la grilla con los servidores */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
           {activos.map((servidor) => (
-            <div key={servidor.id} className="bg-white p-5 rounded-lg shadow-md border-l-4 border-blue-600 hover:shadow-lg transition-shadow">
-              <h3 className="text-xl font-bold text-gray-800">{servidor.nombre}</h3>
-              <p className="text-sm text-gray-500 mb-4 font-mono">{servidor.entorno}</p>
+            <Link key={servidor.id} to={`/inventario/${servidor.id}`} className="block" >
+              <div className="bg-white p-5 rounded-lg shadow-md border-l-4 border-blue-600 hover:shadow-lg transition-shadow">
+                <h3 className="text-xl font-bold text-gray-800">{servidor.nombre}</h3>
+                <p className="text-sm text-gray-500 mb-4 font-mono">{servidor.entorno}</p>
 
-              <div className="bg-gray-50 p-3 rounded border border-gray-100">
-                <span className="font-semibold text-sm text-gray-700 uppercase tracking-wider">Software Detectado</span>
-                <ul className="mt-2 space-y-1 text-sm text-gray-600">
-                  {Object.entries(servidor.software_instalado).map(([software, version]) => (
-                    <li key={software} className="flex justify-between border-b border-gray-200 pb-1 last:border-0">
-                      <span className="capitalize">{software}</span>
-                      <span className="font-mono text-blue-600 bg-blue-50 px-2 py-0.5 rounded text-xs">{version}</span>
-                    </li>
-                  ))}
-                </ul>
+                <div className="bg-gray-50 p-3 rounded border border-gray-100">
+                  <span className="font-semibold text-sm text-gray-700 uppercase tracking-wider">Software Detectado</span>
+                  <ul className="mt-2 space-y-1 text-sm text-gray-600">
+                    {Object.entries(servidor.software_instalado).map(([software, version]) => (
+                      <li key={software} className="flex justify-between border-b border-gray-200 pb-1 last:border-0">
+                        <span className="capitalize">{software}</span>
+                        <span className="font-mono text-blue-600 bg-blue-50 px-2 py-0.5 rounded text-xs">{version}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </section>

@@ -163,18 +163,6 @@ export default function Fuentes() {
                 </div>
 
                 <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    {fuente.processed ? (
-                      <Badge className="bg-green-500">
-                        Procesada
-                      </Badge>
-                    ) : (
-                      <Badge variant="outline">
-                        Pendiente
-                      </Badge>
-                    )}
-                  </div>
-
                   <a
                     href={fuente.url}
                     target="_blank"
@@ -183,10 +171,6 @@ export default function Fuentes() {
                   >
                     {fuente.url}
                   </a>
-
-                  <div className="text-xs text-muted-foreground mt-1">
-                    {new Date(fuente.processdate).toLocaleString()}
-                  </div>
                 </div>
 
                 <Button
