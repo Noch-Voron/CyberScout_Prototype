@@ -19,6 +19,8 @@ class NoticiaData(BaseModel):
     rawcontent: str
     extractdate: datetime
     tags: Optional[TagsData] = None
+    processdate: Optional[datetime] = None
+    processed: Optional[bool] = None
     
 class FuenteData(BaseModel):
     id: int

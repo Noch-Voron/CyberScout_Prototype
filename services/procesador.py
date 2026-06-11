@@ -2,8 +2,7 @@ import json
 import asyncio
 from db.database import db
 from services.clasificador import clasificar_noticias
-from services.notificador import notificador
-from motor_de_cruce.models import noticiaEstructurada  
+from services.notificador import notificador 
 
 async def procesar_noticias():
     if not db.pool:
@@ -30,13 +29,6 @@ async def procesar_noticias():
                     # 1. Llamamos a Gemini
                     resultado_json = await clasificar_noticias(texto_crudo)
                     tags_json_str = json.dumps(resultado_json)
-
-                    # ---> LA ADUANA DE CRISTÓBAL EMPIEZA AQUÍ <---
-                    
-                    # 2. Convertimos el JSON de Gemini al modelo Pydantic del motor
-                    noticia_obj = noticiaEstructurada(**resultado_json)
-
-                    # ---> LA ADUANA DE CRISTÓBAL TERMINA AQUÍ <---
 
                     # 4. Guardamos la noticia en la Base de Datos como procesada
                     await conn.execute("""

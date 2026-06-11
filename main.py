@@ -11,7 +11,6 @@ from contextlib import asynccontextmanager
 from services.ingesta import ingesta
 from routers.noticias import app as noticias_routes
 from routers.fuentes import app as fuentes_routes
-from routers import inventario
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await db.connect()
@@ -38,7 +37,6 @@ app.add_middleware(
     
 app.include_router(noticias_routes, prefix="/api/noticias", tags=["Noticias"])
 app.include_router(fuentes_routes, prefix="/api/fuentes", tags=["Fuentes"])
-app.include_router(inventario.router)
 
 
 @app.get("/")
