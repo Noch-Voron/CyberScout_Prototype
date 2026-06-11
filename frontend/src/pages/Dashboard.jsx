@@ -64,21 +64,6 @@ export default function Dashboard() {
             <span className="size-1.5 rounded-full bg-primary animate-pulse" />
             Sistema operando
           </div>
-
-          <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4 max-w-4xl">
-            <Stat
-              icon={<ShieldAlert className="size-5" />}
-              label="Alertas relevantes"
-              value={String(alertas.length)}
-              hint={`${critical} críticas`}
-            />
-            <Stat
-              icon={<TrendingUp className="size-5" />}
-              label="Relevancia"
-              value={`${relevantPct}%`}
-              hint={`${alertas.length} de ${total} clasificadas`}
-            />
-          </div>
         </div>
       </section>
 

@@ -12,14 +12,16 @@ app = APIRouter()
 async def get_noticias():
     try:
         async with db.pool.acquire() as conn:
-            noticias = await conn.fetch("SELECT id, title, url, rawcontent, tags, extractdate FROM noticias")
+            noticias = await conn.fetch("SELECT id, title, url, rawcontent, tags, extractdate, processdate, processed FROM noticias")
         aux = [NoticiaData(
                     id=noticia["id"], 
                     title=noticia["title"], 
                     url=noticia["url"], 
                     rawcontent=noticia["rawcontent"],
                     tags = json.loads(noticia["tags"]) if noticia["tags"] else None,
-                    extractdate = noticia["extractdate"]
+                    extractdate = noticia["extractdate"],
+                    processdate = noticia["processdate"], 
+                    processed = noticia["processed"]
                 ) for noticia in noticias]
         return aux
     except Exception as e:
@@ -30,14 +32,16 @@ async def get_noticias():
 async def get_noticia_id(noticia_id: int):
     async with db.pool.acquire() as conn:
         noticia = await conn.fetchrow(
-            "SELECT id, title, url, rawcontent, tags, extractdate FROM noticias WHERE id = $1",noticia_id)
+            "SELECT id, title, url, rawcontent, tags, extractdate, processdate, processed FROM noticias WHERE id = $1",noticia_id)
         aux = NoticiaData(
                 id=noticia["id"], 
                 title=noticia["title"], 
                 url=noticia["url"], 
                 rawcontent=noticia["rawcontent"],
                 tags = json.loads(noticia["tags"]) if noticia["tags"] else None,
-                extractdate = noticia["extractdate"]
+                extractdate = noticia["extractdate"],
+                processdate = noticia["processdate"], 
+                processed = noticia["processed"]
                 )
     return aux
 
@@ -54,5 +58,16 @@ async def stream_noticias():
         except Exception as e:
             notificador.desconectar_cliente(cola)
             print("Error en stream_noticias:", e)
+
+@app.put("/{noticia_id}/reprocesar")
+async def reprocesar_reporte(noticia_id: int):
+    async with db.pool.acquire() as conn:
+        await conn.execute("""
+            UPDATE noticias 
+            SET processed = FALSE
+            WHERE id = $1
+            """, noticia_id)
+            
+        return {"mensaje": "Noticia marcada para reprocesamiento"}
 
     return StreamingResponse(event_generator(), media_type="text/event-stream")

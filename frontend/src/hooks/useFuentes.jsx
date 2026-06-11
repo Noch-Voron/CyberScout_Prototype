@@ -1,4 +1,3 @@
-// src/hooks/useFuentes.js
 import { useState, useEffect } from "./hooks";
 
 export function use_getFuentes() {
@@ -46,19 +45,25 @@ export function use_getFuente_id(id) {
 
 export async function addFuente(url) {
   const response = await fetch(
-    "http://localhost:8000/api/fuentes",
+    "http://localhost:8000/api/fuentes/",
     {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        url: url,
-      }),
+      body: JSON.stringify({ url }),
     }
   );
 
-  return await response.json();
+  if (!response.ok) {
+    const error = await response.json();
+
+    throw new Error(
+      error.detail || "Error al agregar fuente"
+    );
+  }
+
+  return response.json();
 }
 
 export async function deleteFuente(id) {
