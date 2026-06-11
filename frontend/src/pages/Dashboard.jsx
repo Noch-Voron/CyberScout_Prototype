@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { AppShell } from "../components/AppShell";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
@@ -17,7 +18,20 @@ import { useSincronizar } from "../hooks/useSincronizar";
 
 export default function Dashboard() {
   const { noticias } = use_getNoticias();
-  const { alertas } = useSincronizar();
+  const { alertas, sincronizar } = useSincronizar();
+
+  useEffect(() => {
+    const evtSource = new EventSource("http://localhost:8000/api/noticias/stream");
+    
+    evtSource.onmessage = function(event) {
+      console.log("Nueva noticia detectada en tiempo real. Sincronizando...");
+      sincronizar();
+    };
+
+    return () => {
+      evtSource.close();
+    };
+  }, [sincronizar]);
 
   const sortedAlertas = [...alertas].sort((a, b) => {
     const rankA = severityOrder[a.noticia_original?.severidad] ?? 999;
