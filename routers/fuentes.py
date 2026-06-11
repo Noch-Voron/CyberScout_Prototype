@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException
 
 from db.database import db
 from squemas.squemas import FuenteData, FuenteCreate
+from services.ingesta import ingesta
 
 app = APIRouter()
 
@@ -72,6 +73,8 @@ async def add_fuente(fuente: FuenteCreate):
             VALUES ($1, NOW(), FALSE)
             RETURNING id, url, processdate, processed
         """, fuente.url)
+
+    await ingesta()
 
     return FuenteData(
         id=row["id"],

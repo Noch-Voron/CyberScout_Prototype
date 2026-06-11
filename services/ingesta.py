@@ -30,7 +30,7 @@ async def ingesta():
                     #las noticias son ordenadas de manera cronologica, si se encuentra uno ya procesado entonces todos los que estan detras ya estan procesados
                     print("Todas las noticias nuevas de"+ source["url"] +" han sido ingresadas")
                     break
-            return 0
+            break
 
 if __name__ == "__main__":
     import asyncio
