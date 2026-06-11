@@ -58,13 +58,16 @@ async def stream_noticias():
         except Exception as e:
             notificador.desconectar_cliente(cola)
             print("Error en stream_noticias:", e)
+    return StreamingResponse(event_generator(), media_type="text/event-stream")
+
 
 @app.put("/{noticia_id}/reprocesar")
 async def reprocesar_reporte(noticia_id: int):
     async with db.pool.acquire() as conn:
         await conn.execute("""
             UPDATE noticias 
-            SET processed = FALSE
+            SET processed = FALSE,
+                processdate = NULL
             WHERE id = $1
             """, noticia_id)
             

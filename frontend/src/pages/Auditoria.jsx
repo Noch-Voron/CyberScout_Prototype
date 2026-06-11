@@ -41,7 +41,6 @@ export default function Auditoria() {
     try {
       const res = await fetch(`http://localhost:8000/api/noticias/${noticiaId}/reprocesar`, { method: "PUT" });
       if (res.ok) {
-        alert("Noticia enviada a la cola de reprocesamiento. Desaparecerá de esta lista hasta que Gemini la evalúe de nuevo.");
         refetch(); // Recargamos las noticias usando tu hook
       }
     } catch (error) {
