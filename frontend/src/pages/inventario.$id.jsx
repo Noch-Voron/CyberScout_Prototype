@@ -102,7 +102,7 @@ export default function InventarioDetail() {
 
                     <Link
                         key={`${a.noticia_id}-${a.software_afectado}`}
-                        to={`/noticias/${a.noticia_id}`}
+                        to={`/news/${a.noticia_id}`}
                         className="block"
                     >
 
