@@ -5,7 +5,7 @@ import asyncio
 from db.database import db
 
 #hardcodeado mientras aun no este la hu3 con las fuentes dinamicas/disponibles en db
-sources = []#"https://feeds.feedburner.com/TheHackersNews"]
+#sources = ["https://feeds.feedburner.com/TheHackersNews"]
 
 async def ingesta():
     print("ingesta")
@@ -30,6 +30,7 @@ async def ingesta():
                     #las noticias son ordenadas de manera cronologica, si se encuentra uno ya procesado entonces todos los que estan detras ya estan procesados
                     print("Todas las noticias nuevas de"+ source["url"] +" han sido ingresadas")
                     break
+            return 0
 
 if __name__ == "__main__":
     import asyncio
