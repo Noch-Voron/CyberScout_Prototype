@@ -24,7 +24,7 @@ mock_news = [
             "estado_vulnerabilidad": "Parche Disponible"
         }
     },
-    {
+    {  # OK (DUPED)
         "title": "PostgreSQL 15.2 vulnerable to database crash on recursive queries",
         "url": "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2024-PG-CRASH",
         "rawcontent": "PostgreSQL versions in the 15.x branch up to 15.2 are vulnerable to a denial of service. Specific recursive queries with window functions can trigger a server crash, resulting in database unavailability.",
@@ -38,7 +38,7 @@ mock_news = [
             "estado_vulnerabilidad": "Parche Disponible"
         }
     },
-    {
+    { # OK
         "title": "Apache HTTP Server 2.4.49 path traversal vulnerability actively exploited",
         "url": "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-41773",
         "rawcontent": "A path traversal vulnerability in Apache HTTP Server 2.4.49 allows attackers to read arbitrary files and, under certain configurations, execute remote code via server commands.",
@@ -52,7 +52,7 @@ mock_news = [
             "estado_vulnerabilidad": "Parche Disponible"
         }
     },
-    {
+    {  # OK
         "title": "Java SE Runtime Environment 8u181 and earlier privilege escalation",
         "url": "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2024-JAVA-PRIV",
         "rawcontent": "A vulnerability in Oracle Java SE versions 8 (specifically 1.8.0 and earlier updates) allows local users to escalate privileges via the hotkey handler during runtime execution.",
@@ -66,7 +66,7 @@ mock_news = [
             "estado_vulnerabilidad": "Parche Disponible"
         }
     },
-    {
+    { # OK
         "title": "Python 3.10.x SSL module vulnerability allows certificate bypass",
         "url": "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2024-PY-SSL",
         "rawcontent": "Python 3.10.4 and all versions in the 3.10 branch prior to 3.10.5 contain a vulnerability in the ssl module. Under specific circumstances, certificate revocation checks are bypassed, enabling man-in-the-middle attacks.",
@@ -84,7 +84,7 @@ mock_news = [
     # ==========================================
     # --- 10 COINCIDENCIAS PARCIALES (PARTIAL MATCH) ---
     # ==========================================
-    {
+    { # OK
         "title": "Nginx 1.25.x / 1.26.x HTTP/3 Rapid Reset vulnerability",
         "url": "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2024-NGINX-H3",
         "rawcontent": "A denial of service vulnerability in Nginx 1.25.x and 1.26.x HTTP/3 implementation allows remote attackers to cause high CPU usage via HTTP/3 requests.",
@@ -98,7 +98,7 @@ mock_news = [
             "estado_vulnerabilidad": "Parche Disponible"
         }
     },
-    {
+    { # OK
         "title": "Python 3.11/3.12 integer overflow in tarfile module",
         "url": "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2024-PY-TAR",
         "rawcontent": "An integer overflow vulnerability exists in Python versions >=3.11.0 when parsing malicious tar files, leading to memory corruption.",
@@ -112,7 +112,7 @@ mock_news = [
             "estado_vulnerabilidad": "Parche Disponible"
         }
     },
-    {
+    {  # OK (DUPED)
         "title": "PostgreSQL 14 security update fixes SQL injection in extensions",
         "url": "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2024-PG-SQLI",
         "rawcontent": "PostgreSQL 14.x contains a vulnerability in its extension manager that allows database administrators to execute arbitrary SQL commands.",
@@ -126,7 +126,7 @@ mock_news = [
             "estado_vulnerabilidad": "Parche Disponible"
         }
     },
-    {
+    {  # OK
         "title": "Apache HTTP Server 2.4.58 HTTP/2 Denial of Service",
         "url": "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2024-APACHE-H2",
         "rawcontent": "A vulnerability in Apache HTTP Server 2.4.58 allows an attacker to exhaust server resources using HTTP/2 stream multiplexing.",
@@ -140,7 +140,7 @@ mock_news = [
             "estado_vulnerabilidad": "Parche Disponible"
         }
     },
-    {
+    {   #OK
         "title": "Oracle Java SE 17 / 21 Remote Code Execution vulnerability",
         "url": "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2024-JAVA-RCE",
         "rawcontent": "A critical vulnerability in Oracle Java SE versions 17.x and 21.x allows remote attackers to execute arbitrary code via the Java 2D component.",
@@ -154,7 +154,7 @@ mock_news = [
             "estado_vulnerabilidad": "Parche Disponible"
         }
     },
-    {
+    {  # OK
         "title": "Nginx 1.20.2 memory leak in SSL handshake",
         "url": "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2024-NGINX-LEAK",
         "rawcontent": "Nginx version 1.20.2 contains a memory leak vulnerability during SSL/TLS handshake negotiations when keeping connection alive.",
@@ -168,7 +168,7 @@ mock_news = [
             "estado_vulnerabilidad": "Parche Disponible"
         }
     },
-    {
+    {  # OK
         "title": "Python 3.12.x arbitrary code execution in urllib",
         "url": "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2024-PY-URL",
         "rawcontent": "A vulnerability in Python 3.12.x urllib module allows arbitrary command execution via crafted URL schemes parsed by the script parser.",
@@ -182,7 +182,7 @@ mock_news = [
             "estado_vulnerabilidad": "Parche Disponible"
         }
     },
-    {
+    { # OK (DUPED)
         "title": "PostgreSQL 12.x buffer overflow in pg_dump tool",
         "url": "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2024-PG-DUMP",
         "rawcontent": "PostgreSQL 12.x database backups using the pg_dump utility are vulnerable to stack-based buffer overflows when exporting very long table names.",
@@ -196,7 +196,7 @@ mock_news = [
             "estado_vulnerabilidad": "Parche Disponible"
         }
     },
-    {
+    { # OK
         "title": "Apache HTTP Server 2.4.52 vulnerability allows request smuggling",
         "url": "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2024-APACHE-SMUGGLE",
         "rawcontent": "A request smuggling vulnerability exists in Apache HTTP Server version 2.4.52 when handling invalid Transfer-Encoding headers in a proxy configuration.",
@@ -210,7 +210,7 @@ mock_news = [
             "estado_vulnerabilidad": "Parche Disponible"
         }
     },
-    {
+    { # OK
         "title": "Oracle Java SE 11.x vulnerability in security handshake",
         "url": "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2024-JAVA-TLS",
         "rawcontent": "A vulnerability in Java SE 11.x TLS negotiation allows unauthorized read access to secure streams during the key exchange handshake.",

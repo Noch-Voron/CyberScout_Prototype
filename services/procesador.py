@@ -56,7 +56,7 @@ async def procesar_noticias():
                     print(f" Error procesando la noticia ID {noticia_id}: {e}")
                 
                 # Respetar el límite de solicitudes de la API de Gemini (ej. 15s - 20s de espera)
-                await asyncio.sleep(15)
+                await asyncio.sleep(30)
                     
     except Exception as e:
         print(f" Error fatal en el loop del procesador: {e}")
