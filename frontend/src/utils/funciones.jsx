@@ -2,9 +2,13 @@
 export function severityOrder(severity) {
   const order = {
     critica: 0,
+    critico: 0,
     alta: 1,
+    alto: 1,
     media: 2,
+    medio: 2,
     baja: 3,
+    bajo: 3,
   };
   return order[severity] ?? 99;
 }

@@ -43,6 +43,16 @@ export default function NewsDetail() {
     const productosAfectados = Object.keys(affectedDict);
     // --- LA CORRECCIÓN TERMINA AQUÍ ---
 
+    const inventario = JSON.parse(
+      localStorage.getItem("inventario") || "[]"
+    );
+    const softwareInstalado = new Set();
+    inventario.forEach((srv) => {
+      Object.keys(srv.software_instalado || {}).forEach((sw) => {
+        softwareInstalado.add(sw.toLowerCase());
+      });
+    });
+
     return (
     <AppShell>
       <section className="container mx-auto px-4 py-10 max-w-5xl">
@@ -70,14 +80,23 @@ export default function NewsDetail() {
                 </p>
                 ) : (
                 <div className="flex flex-wrap gap-1">
-                    {productosAfectados.map((a, index) => (
-                    <Badge
+                  {productosAfectados.map((a, index) => {
+                    const coincideInventario =
+                      softwareInstalado.has(a.toLowerCase());
+
+                    return (
+                      <Badge
                         key={index}
-                        className="bg-primary/10 text-primary border-primary/30 border text-[10px] capitalize"
-                    >
+                        className={
+                          coincideInventario
+                            ? "bg-red-500 text-white border-red-600 border text-[10px] capitalize"
+                            : "bg-primary/10 text-primary border-primary/30 border text-[10px] capitalize"
+                        }
+                      >
                         {a}
-                    </Badge>
-                    ))}
+                      </Badge>
+                    );
+                  })}
                 </div>
                 )}
                 
